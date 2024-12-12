@@ -1,4 +1,5 @@
 import datetime
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -19,7 +20,6 @@ def main():
             "area_type": "category",
         },
     )
-    print(df)
 
     area_dinamic = (
         df.dropna()
@@ -28,6 +28,7 @@ def main():
         .reset_index()
         .set_index("time_index")
     )
+
     last_date = df.index.max().strftime("%Y-%m-%d %X")
 
     occupied_by_ua = (
@@ -121,7 +122,7 @@ def main():
         ax=ax,
         legend=None,
     )
-    bbox = dict(boxstyle="larrow", fc="0.8", alpha=0.4)
+    bbox = {"boxstyle": "larrow", "fc": "0.8", "alpha": 0.4}
     dy = day_din_area.iloc[-1].values[0]
     dx = day_din_area.index.max()
     ax.annotate(
@@ -147,4 +148,4 @@ def main():
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())
