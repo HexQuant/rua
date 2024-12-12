@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 # reqwest = { version = "*", features = ["blocking"] }
-reqwest = { version = "*", features = ["blocking"] }
+reqwest = { version = "*", features = ["blocking", "socks"] }
 
 tokio = { version = "*", features = ["full"] }
 serde = { version = "*", features = ["derive"] }

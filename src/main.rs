@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 use reqwest::{Client, Error};
 use serde::{Deserialize, Deserializer};
+use std::env;
 use std::io::Write;
 use std::path::Path;
 // use std::thread::sleep;
@@ -71,13 +72,13 @@ async fn fetch_url(
     Err(last_error.unwrap())
 }
 
-fn get_timestamps() -> Result<String, Error> {
-    let client = reqwest::blocking::Client::new();
+async fn get_timestamps(client: &Client) -> Result<String, Error> {
+    // let client = reqwest::blocking::Client::new();
     let time_history_url = "https://deepstatemap.live/api/history/public";
-    match client.get(time_history_url).send() {
+    match client.get(time_history_url).send().await {
         Ok(response) => {
             if response.status().is_success() {
-                return response.text();
+                return response.text().await;
             } else {
                 return Err(response.error_for_status().unwrap_err());
             }
@@ -107,16 +108,28 @@ async fn main() {
     let max_retries = 10;
     let delay = Duration::from_secs(2);
 
+    let client = match env::var("HTTPS_PROXY") {
+        Ok(val) => {
+            println!("HTTPS_PROXY: {val:?}");
+            let proxy = reqwest::Proxy::https(val).unwrap();
+            Client::builder().proxy(proxy).build().unwrap()
+        }
+        Err(e) => {
+            println!("couldn't interpret HTTPS_PROXY: {e}");
+            Client::new()
+        }
+    };
+
     // Загрузка временных меток
     println!("Fetching timestamps...");
-    let json_data = get_timestamps().unwrap();
+    let json_data = get_timestamps(&client).await.unwrap();
     let result: Vec<AreaItem> =
         serde_json::from_str(&json_data).expect("Failed to deserialize JSON");
 
     // Загрузка площадей
     let mut areas = Vec::with_capacity(5000);
-    let client = Client::new();
     let mut pbar = pbar(Some(result.len()));
+
     for area_item in result {
         let timestamp = area_item.id;
 
