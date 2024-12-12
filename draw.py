@@ -1,18 +1,10 @@
 import datetime
-import time
 from pathlib import Path
 
-import holidays
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
-import requests
 import seaborn as sns
-import statsmodels.api as sm
 from statsmodels.tsa.arima.model import ARIMA
-from statsmodels.tsa.deterministic import Fourier
-from statsmodels.tsa.tsatools import add_trend
-from tqdm import tqdm
 
 
 def main():
@@ -80,7 +72,6 @@ def main():
         & (hh["mean"] <= svo_end_km_ration / 100)
     ].index.min()
     fcst = fcst[:end_svo]
-    # fh = fcst.shape[0]
     fh = 90
 
     offset = 40

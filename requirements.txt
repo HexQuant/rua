@@ -2,6 +2,4 @@ pandas
 seaborn
 matplotlib
 statsmodels
-jupyter
 holidays
-watermark
