@@ -1,0 +1,23 @@
+cargo-features = ["profile-rustflags"]
+
+[package]
+name = "rua"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# reqwest = { version = "*", features = ["blocking"] }
+reqwest = { version = "*", features = ["blocking"] }
+
+tokio = { version = "*", features = ["full"] }
+serde = { version = "*", features = ["derive"] }
+serde_json = "*"
+chrono = { version = "*", features = ["serde"] }
+tqdm = "*"
+
+[profile.release]
+strip = "debuginfo"
+lto = true
+codegen-units = 1
+opt-level = 3
+# rustflags = ["-C target-cpu=native", "-C target-feature=+avx2"]
