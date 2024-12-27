@@ -169,6 +169,13 @@ def main() -> None:
         ax=ax,
         legend=None,
     )
+    ax.fill_between(
+        day_din_area["area"].index,
+        0,
+        day_din_area["area"],
+        color="royalblue",
+        alpha=0.1,
+    )
     bbox = {"boxstyle": "larrow", "fc": "0.8", "alpha": 0.4}
     dy = day_din_area.iloc[-1].values[0]
     dx = day_din_area.index.max()
