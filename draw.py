@@ -1,3 +1,7 @@
+"""
+Draw dynamic transition of territory in the Russian-Ukrainian conflict
+"""
+
 import datetime
 import sys
 from pathlib import Path
@@ -9,16 +13,28 @@ import seaborn as sns
 from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.tsatools import add_trend
 
+# pylint: disable=invalid-name
+
 
 def append_trend(X: pd.DataFrame, date, trend_name: str) -> pd.DataFrame:
+    """Add trend to a DataFrame from a given date
+
+    Args:
+        X (pd.DataFrame): DataFrame to which trend will be added
+        date (_type_): Date from which trend will be added
+        trend_name (str): Name of the trend
+
+    Raises:
+        ValueError: If date is out of range
+
+    Returns:
+        pd.DataFrame: DataFrame with added trend
+    """
     if X.index.min() <= date <= X.index.max():
         X[trend_name] = 0
         X.loc[date:, trend_name] = np.arange(len(X.loc[date:, trend_name]))
         return X
-    else:
-        raise ValueError(
-            f"Date {date} is out of range [{X.index.min()}, {X.index.max()}]"
-        )
+    raise ValueError(f"Date {date} is out of range [{X.index.min()}, {X.index.max()}]")
 
 
 def main() -> None:
