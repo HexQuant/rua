@@ -38,6 +38,8 @@ def append_trend(X: pd.DataFrame, date, trend_name: str) -> pd.DataFrame:
 
 
 def main() -> None:
+    """Script entry point"""
+
     df = pd.read_csv(
         Path("data/area_history.csv"),
         index_col="time_index",
