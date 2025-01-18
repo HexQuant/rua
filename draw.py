@@ -152,23 +152,41 @@ def main() -> None:
         title="Территория подконтрольная РФ с начала СВО",
     )
 
-    ax.text(max_idx, max_val, f"{max_val:.1f}", ha="center", va="bottom")
+    ax.text(max_idx, max_val * 1.01, f"{max_val:.1f}", ha="center", va="bottom")
 
     ax.text(
         occupied_by_ru["area"].index.max(),
-        occupied_by_ru["area"].iloc[-1] / 1000,
-        f'{occupied_by_ru['area'].iloc[-1]/1000:.1f}',
+        occupied_by_ru["area"].iloc[-1] / 1000 * 1.01,
+        f"{occupied_by_ru['area'].iloc[-1] / 1000:.1f}",
         ha="center",
         va="bottom",
     )
 
     ax.text(
-        fcst.index.max(),
+        fcst.index.max() + pd.DateOffset(days=3),
         fcst["mean"].iloc[-1] / 1000,
-        f"{fcst['mean'].iloc[-1]/1000:.1f}",
+        f"{fcst['mean'].iloc[-1] / 1000:.1f}",
         ha="left",
         va="center",
         color="darkorange",
+    )
+
+    ax.text(
+        fcst.index.max(),
+        fcst["mean_ci_upper"][-1] / 1000 * 1.01,
+        f"{fcst['mean_ci_upper'][-1] / 1000:.1f}",
+        ha="center",
+        va="bottom",
+        color="grey",
+    )
+
+    ax.text(
+        fcst.index.max(),
+        fcst["mean_ci_lower"][-1] / 1000 * 0.99,
+        f"{fcst['mean_ci_lower'][-1] / 1000:.1f}",
+        ha="center",
+        va="top",
+        color="grey",
     )
 
     ax = axs[1]
@@ -199,7 +217,7 @@ def main() -> None:
     dx = day_din_area.index.max()
     ax.annotate(
         f"{dy:.2f}",
-        (dx + datetime.timedelta(days=16 + int(fh / 60)), dy),
+        (dx + datetime.timedelta(days=18 + int(fh / 60)), dy),
         # xytext=(-2, 1),
         bbox=bbox,
         va="center",
