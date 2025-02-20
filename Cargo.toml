@@ -3,7 +3,7 @@ cargo-features = ["profile-rustflags"]
 [package]
 name = "rua"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 # reqwest = { version = "*", features = ["blocking"] }
@@ -20,4 +20,4 @@ strip = "debuginfo"
 lto = true
 codegen-units = 1
 opt-level = 3
-# rustflags = ["-C target-cpu=native", "-C target-feature=+avx2"]
+rustflags = ["-C target-cpu=native", "-C target-feature=+avx2"]
