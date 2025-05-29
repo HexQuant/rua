@@ -20,4 +20,4 @@ strip = "debuginfo"
 lto = true
 codegen-units = 1
 opt-level = 3
-rustflags = ["-Ctarget-cpu=native", "-Ctarget-feature=+avx2"]
+rustflags = ["-Ctarget-cpu=native", "-Ctarget-feature=+avx2,+fma"]
