@@ -200,6 +200,12 @@ def main() -> None:
         .rolling(5, center=True, min_periods=3)
         .mean()
     )
+    area_by_last_weak = day_din_area["area"][-7:].sum()
+    area_by_last_month = day_din_area["area"][-30:].sum()
+    print(
+        f"За последнюю неделю: {area_by_last_weak:.2f}\nза последний месяц: {area_by_last_month:.2f}"
+    )
+
     sns.lineplot(
         day_din_area["area"],
         ax=ax,

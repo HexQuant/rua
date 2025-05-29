@@ -4,4 +4,5 @@ if [ ! -f target/release/rua ]; then
     cargo build --release
 fi
 ./target/release/rua
+source ~/venv/myds313/bin/activate
 python draw.py
