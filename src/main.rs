@@ -1,9 +1,10 @@
 use chrono::{DateTime, Utc};
 use reqwest::{Client, Error};
 use serde::{Deserialize, Deserializer};
-use std::env;
+use std::fs::File;
 use std::io::Write;
 use std::path::Path;
+use std::{env, io};
 // use std::thread::sleep;
 use std::time::Duration;
 use tqdm::pbar;
@@ -16,7 +17,7 @@ struct Area {
     area: f64,
     #[serde(deserialize_with = "str_to_f64")]
     percent: f64,
-    #[serde(rename = "type")]
+    #[serde(rename = "type", alias = "area_type")]
     area_type: String,
 }
 
@@ -35,6 +36,7 @@ struct AreaItem {
     created_at: DateTime<Utc>,
 }
 
+// Функция для преобразования строки в f64
 fn str_to_f64<'de, D>(deserializer: D) -> Result<f64, D::Error>
 where
     D: Deserializer<'de>,
@@ -43,6 +45,40 @@ where
     s.parse::<f64>().map_err(serde::de::Error::custom)
 }
 
+// Функция для чтения CSV в вектор структур Area
+fn read_csv_to_areas(file_path: &str) -> io::Result<Vec<Area>> {
+    // Открываем CSV-файл
+    let file = File::open(file_path)?;
+    let mut rdr = csv::Reader::from_reader(file);
+
+    // Вектор для хранения результатов
+    let mut areas = Vec::new();
+
+    // Читаем записи из CSV
+    for result in rdr.deserialize() {
+        let mut record: Area = result?;
+        // Устанавливаем time_index вручную, так как он пропускается при десериализации
+        record.time_index = Utc::now(); // Замените на нужную логику для time_index
+        areas.push(record);
+    }
+
+    Ok(areas)
+}
+
+fn draw() {
+    println!("Drawing...");
+    let file_path = "data/area_history.csv";
+    match read_csv_to_areas(file_path) {
+        Ok(areas) => {
+            for area in areas {
+                println!("{:?}", area);
+            }
+        }
+        Err(e) => eprintln!("Ошибка при чтении CSV: {}", e),
+    }
+}
+
+// Функция для отправки запроса на URL и повторных попыток в случае ошибки
 async fn fetch_url(
     client: &Client,
     timestamp: i64,
@@ -72,6 +108,7 @@ async fn fetch_url(
     Err(last_error.unwrap())
 }
 
+// Функция для получения временных меток
 async fn get_timestamps(client: &Client) -> Result<String, Error> {
     // let client = reqwest::blocking::Client::new();
     let time_history_url = "https://deepstatemap.live/api/history/public";
@@ -79,9 +116,8 @@ async fn get_timestamps(client: &Client) -> Result<String, Error> {
         Ok(response) => {
             if response.status().is_success() {
                 return response.text().await;
-            } else {
-                return Err(response.error_for_status().unwrap_err());
             }
+            return Err(response.error_for_status().unwrap_err());
         }
         Err(err) => {
             panic!("Failed to fetch the URL: {}", err);
@@ -89,6 +125,7 @@ async fn get_timestamps(client: &Client) -> Result<String, Error> {
     }
 }
 
+// Функция для записи данных о территории в CSV
 fn to_csv(areas: Vec<Area>, file_path: &Path) {
     let mut file = std::fs::File::create(file_path).unwrap();
     let head_str = "time_index,hash,area,percent,area_type\n";
@@ -104,6 +141,8 @@ fn to_csv(areas: Vec<Area>, file_path: &Path) {
 
 #[tokio::main]
 async fn main() {
+    // draw();
+    // return;
     println!("RUA - Dynamic transition of territory in the Russian-Ukrainian conflict");
     let max_retries = 10;
     let delay = Duration::from_secs(2);
