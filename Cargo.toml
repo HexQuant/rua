@@ -6,8 +6,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-# reqwest = { version = "*", features = ["blocking"] }
-reqwest = { version = "*", features = ["blocking", "socks"] }
+reqwest = { version = "*", features = ["socks"] }
 
 tokio = { version = "*", features = ["full"] }
 serde = { version = "*", features = ["derive"] }
@@ -15,7 +14,7 @@ serde_json = "*"
 chrono = { version = "*", features = ["serde"] }
 tqdm = "*"
 polars = "0.49.1"
-plotly = "0.12.1"
+plotly = "0.13.4"
 csv = "1.3.1"
 
 [profile.release]
